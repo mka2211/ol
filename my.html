@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Universe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;500;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff2d55;
+            --secondary: #6366f1;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            cursor: none; /* Кастомный курсор */
+        }
+        .font-romantic { font-family: 'Dancing Script', cursive; }
+
+        /* Анимированные неоновые сферы */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            filter: blur(80px);
+            border-radius: 50%;
+            z-index: 0;
+            opacity: 0.15;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%) rotate(0deg); }
+            to { transform: translate(20%, 20%) rotate(360deg); }
+        }
+
+        /* Эффект стекла 2.0 */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Кастомный курсор-сердечко */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+            mix-blend-mode: screen;
+            transition: transform 0.1s ease;
+        }
+
+        /* Текст с переливом */
+        .shimmer {
+            background: linear-gradient(90deg, #fff, var(--primary), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center overflow-hidden">
+
+    <!-- Флагманский фон -->
+    <div id="cursor"></div>
+    <div class="blob" style="top: -100px; left: -100px;"></div>
+    <div class="blob" style="bottom: -100px; right: -100px; animation-delay: -5s;"></div>
+
+    <!-- Основная карточка -->
+    <main class="glass relative z-10 p-12 md:p-20 rounded-[3rem] text-center max-w-3xl mx-4 transform transition-transform duration-300" id="main-card">
+        
+        <header>
+            <p class="font-romantic text-3xl md:text-4xl text-pink-400 mb-4 opacity-0 animate-[fadeIn_1s_ease-out_forwards]">
+                For My One And Only
+            </p>
+            <h1 class="shimmer text-6xl md:text-8xl font-black tracking-tighter mb-8 drop-shadow-2xl">
+                I Love My Baby
+            </h1>
+        </header>
+
+        <div class="space-y-6 min-h-[100px]">
+            <p id="dynamic-text" class="text-white/80 text-xl md:text-2xl font-light tracking-wide leading-relaxed"></p>
+        </div>
+
+        <!-- Кнопка «Сюрприз» -->
+        <button onclick="boom()" class="mt-12 group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-full transition-all duration-300 active:scale-95">
+            <span class="relative z-10 text-white font-medium tracking-widest uppercase text-xs">Нажми сюда ❤️</span>
+            <div class="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 to-violet-500 opacity-0 group-hover:opacity-20 blur transition-opacity"></div>
+        </button>
+
+    </main>
+
+    <script>
+        // 1. Динамические комплименты
+        const quotes = [
+            "Ты — центр моей вселенной.",
+            "Твоя улыбка освещает весь этот мир.",
+            "С тобой каждый момент становится особенным.",
+            "Ты — лучшее, что когда-либо со мной случалось.",
+            "Обожаю тебя до луны и обратно.",
+            "i love you)"
+        
+        ];
+
+        let i = 0;
+        const textEl = document.getElementById('dynamic-text');
+
+        function type() {
+            let charIndex = 0;
+            textEl.innerHTML = "";
+            const interval = setInterval(() => {
+                if (charIndex < quotes[i].length) {
+                    textEl.innerHTML += quotes[i].charAt(charIndex);
+                    charIndex++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(erase, 2500);
+                }
+            }, 50);
+        }
+
+        function erase() {
+            const interval = setInterval(() => {
+                if (textEl.innerHTML.length > 0) {
+                    textEl.innerHTML = textEl.innerHTML.slice(0, -1);
+                } else {
+                    clearInterval(interval);
+                    i = (i + 1) % quotes.length;
+                    type();
+                }
+            }, 30);
+        }
+
+        // 2. Интерактив курсора
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            // Легкий 3D наклон карточки за мышкой
+            const card = document.getElementById('main-card');
+            const x = (window.innerWidth / 2 - e.clientX) / 25;
+            const y = (window.innerHeight / 2 - e.clientY) / 25;
+            card.style.transform = `rotateY(${-x}deg) rotateX(${y}deg)`;
+        });
+
+        // 3. Эффект взрыва конфетти
+        function boom() {
+            const defaults = { spread: 360, ticks: 100, gravity: 0.5, decay: 0.94, startVelocity: 30 };
+            confetti({ ...defaults, particleCount: 80, scalar: 1.2, shapes: ['heart'] });
+            confetti({ ...defaults, particleCount: 40, scalar: 0.75, shapes: ['circle'] });
+        }
+
+        type(); // Запуск печати
+    </script>
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</body>
+</html>
